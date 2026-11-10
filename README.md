@@ -1,6 +1,7 @@
 # Anatomy Atelier — Interactive 3D Human Anatomy, Spatial Learning & Radiology Lab
 
 > **Author & Maintainer:** Nikshith Nayak  
+> **Live Demo (Vercel):** [human-anatomy-eight.vercel.app](https://human-anatomy-eight.vercel.app)  
 > **Repository:** [github.com/Nikshithnayak/Human-Anatomy](https://github.com/Nikshithnayak/Human-Anatomy)
 
 **Anatomy Atelier** is a spatial computing and 3D medical education platform built with **Next.js 16 (App Router / `vinext`), React 19, TypeScript, Three.js WebGL2, and ONNX Runtime Web**. It brings together interactive full-body 3D anatomy, detailed 9-organ dissection, client-side DICOM MPR & OHIF tools, side-by-side normal-vs-pathological 3D comparison, real SegFormer+ConvLSTM brachial plexus ultrasound segmentation, and board-style clinical learning in one edge-ready web application.

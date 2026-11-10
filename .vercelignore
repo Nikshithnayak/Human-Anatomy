@@ -5,5 +5,8 @@
 dist
 .wrangler
 .vinext
+.next
+external
+coverage
 outputs
 work
