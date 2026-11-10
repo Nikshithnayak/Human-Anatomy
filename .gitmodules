@@ -1,0 +1,6 @@
+[submodule "external/ohif"]
+	path = external/ohif
+	url = https://github.com/OHIF/Viewers.git
+[submodule "external/3d-anatomy"]
+	path = external/3d-anatomy
+	url = https://github.com/nqwrc/3d-anatomy.git
