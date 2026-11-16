@@ -1,10 +1,10 @@
 /**
  * Curated Educational / Research Reference Medical Volumes
- * Calibrated against gold-standard benchmarks from Jung Oh Lee's Radiology Dataset Hub:
+ * Calibrated against gold-standard clinical research benchmarks:
  * - LIDC-IDRI (Lung Image Database Consortium) - Thoracic CT & Pulmonary Nodule
  * - LiTS / BTCV (Liver Tumor & Multi-Organ Abdominal Segmentation) - Abdominal CT & Hepatic Lesion
  * - BraTS 2021 (Brain Tumor Segmentation Challenge) - Multiparametric Neuro-Oncology MRI
- * - RSNA Lumbar Spine 2024 (Spine Degeneration Challenge) - Lumbar Spine CT & Disc Herniation
+ * - RSNA Lumbar Spine (Spine Degeneration Challenge) - Lumbar Spine CT & Disc Herniation
  *
  * Provides real volumetric CT/MRI volumes with anatomically authentic
  * Hounsfield Unit density fields, physical voxel spacing, and anatomical landmarks
@@ -25,7 +25,6 @@ export interface ReferenceStudySummary {
   description: string;
   clinicalScenario: string;
   targetStructures: string[];
-  radiologyHubDatasetId: string;
   benchmarkStandard: string;
 }
 
@@ -41,7 +40,6 @@ export const REFERENCE_STUDIES: ReferenceStudySummary[] = [
     description: "Contrast-enhanced chest CT calibrated to LIDC-IDRI consensus ground truth, featuring aerated lungs, thoracic aorta, heart shadow, rib cage, and a calibrated right upper lobe pulmonary nodule.",
     clinicalScenario: "Screening & evaluation of pulmonary architecture, thoracic aorta contours, and radiologist-annotated solitary pulmonary nodule (SPN).",
     targetStructures: ["bone-spine", "bone-ribs", "lungs-bilateral", "heart-mediastinum", "thoracic-aorta", "lung-nodule"],
-    radiologyHubDatasetId: "lidc-idri",
     benchmarkStandard: "NCI LIDC-IDRI 4-Radiologist Consensus",
   },
   {
@@ -55,7 +53,6 @@ export const REFERENCE_STUDIES: ReferenceStudySummary[] = [
     description: "Portal venous phase abdominal CT calibrated to LiTS & BTCV standards, demonstrating hepatic parenchyma with Segment VIII focal lesion, bilateral kidneys, spleen, abdominal aorta, and lumbar spine.",
     clinicalScenario: "Multi-organ abdominal mapping and characterization of solid viscera, retroperitoneal space, and focal hepatic tumor.",
     targetStructures: ["bone-spine", "liver", "kidneys-bilateral", "spleen", "liver-lesion"],
-    radiologyHubDatasetId: "lits",
     benchmarkStandard: "MICCAI LiTS & BTCV Multi-Atlas Consensus",
   },
   {
@@ -69,7 +66,6 @@ export const REFERENCE_STUDIES: ReferenceStudySummary[] = [
     description: "Multiparametric brain MRI calibrated to RSNA-ASNR-MICCAI BraTS 2021 ground truth, showcasing cerebral cortex, ventricular system (CSF), and right temporal glioblastoma with central necrotic core (NCR), enhancing margin (ET), and peritumoral edema (ED).",
     clinicalScenario: "Pre-operative neurosurgical tumor mapping and radiation oncology planning under multi-sequence contrast criteria.",
     targetStructures: ["brain-parenchyma", "brain-tumor-edema"],
-    radiologyHubDatasetId: "brats-2021",
     benchmarkStandard: "RSNA-ASNR-MICCAI BraTS 2021 Multimodal MRI",
   },
   {
@@ -83,7 +79,6 @@ export const REFERENCE_STUDIES: ReferenceStudySummary[] = [
     description: "High-resolution axial and reformatted lumbar spine CT calibrated to the RSNA Degeneration challenge, demonstrating L1-L5 vertebral bodies, posterior elements, thecal sac, and symptomatic L4-L5 posterior disc herniation.",
     clinicalScenario: "Diagnosis of lumbar radiculopathy, central canal stenosis, and nerve root compression.",
     targetStructures: ["bone-spine", "lumbar-disc-herniation"],
-    radiologyHubDatasetId: "rsna-lumbar-spine-2024",
     benchmarkStandard: "RSNA Lumbar Spine Degeneration Consortium",
   },
 ];

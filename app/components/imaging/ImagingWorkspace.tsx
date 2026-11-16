@@ -33,7 +33,6 @@ import { MprSliceViewer } from "./MprSliceViewer";
 import { SegmentationReviewOverlay } from "./SegmentationReviewOverlay";
 import { PatientSpecific3DViewer } from "./PatientSpecific3DViewer";
 import { EducationalDisclaimerBanner } from "./EducationalDisclaimerBanner";
-import { RadiologyDatasetHubModal } from "./RadiologyDatasetHubModal";
 import { sounds } from "@/app/lib/sound";
 import {
   Activity,
@@ -88,7 +87,6 @@ export function ImagingWorkspace({
   const [locationReport, setLocationReport] = useState<AnatomicalLocationReport | null>(null);
   const [segmentation, setSegmentation] = useState<SegmentationResult | null>(null);
   const [reconstruction, setReconstruction] = useState<ReconstructionResult | null>(null);
-  const [isHubModalOpen, setIsHubModalOpen] = useState(false);
 
   const [activePlane, setActivePlane] = useState<VolumePlane>("axial");
   const [sliceIndices, setSliceIndices] = useState({
@@ -532,18 +530,6 @@ export function ImagingWorkspace({
             <Database size={13} />
             <span>OHIF Viewers & DICOMweb</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              sounds.playClick();
-              setIsHubModalOpen(true);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all bg-gradient-to-r from-amber-500/15 to-orange-500/15 hover:from-amber-500/25 hover:to-orange-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <Database size={13} className="text-amber-500" />
-            <span>🩻 Radiology Dataset Hub (474)</span>
-          </button>
         </div>
 
         <span className="text-[10px] text-neutral-400 font-mono hidden xl:inline">
@@ -723,19 +709,8 @@ export function ImagingWorkspace({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sounds.playClick();
-                      setIsHubModalOpen(true);
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition-all shadow-sm"
-                  >
-                    <Database size={13} />
-                    <span>Browse All 474 Open Datasets</span>
-                  </button>
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                    Instant Load
+                    4 Calibrated Studies Available
                   </span>
                 </div>
               </div>
@@ -1177,13 +1152,6 @@ export function ImagingWorkspace({
           </>
         )}
       </div>
-
-      {/* Radiology Dataset Hub (Jung Oh Lee) 474-Dataset Catalog Modal */}
-      <RadiologyDatasetHubModal
-        isOpen={isHubModalOpen}
-        onClose={() => setIsHubModalOpen(false)}
-        onLoadBenchmarkCase={(caseId, auto3D) => handleLoadReferenceStudy(caseId, auto3D)}
-      />
     </div>
   );
 }

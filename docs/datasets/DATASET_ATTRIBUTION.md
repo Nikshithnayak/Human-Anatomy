@@ -53,22 +53,11 @@ Anatomy Atelier strictly adheres to open scientific research licensing and attri
 
 ---
 
-## 5. Radiology Dataset Hub Integration & Benchmark Standards
+## 5. Clinical Benchmark Volumetric Reference Standards
 
-- **Hub Project**: Radiology Dataset Hub (Curated open-access CT, MRI, PET, and X-ray datasets)
-- **Maintainer / Creator**: Jung Oh Lee
-- **License**: MIT License
-- **Repository / Website**:
-  - Website: [https://jungohlee.github.io/radiology-dataset-hub/](https://jungohlee.github.io/radiology-dataset-hub/)
-  - GitHub: [https://github.com/jungohlee/radiology-dataset-hub](https://github.com/jungohlee/radiology-dataset-hub)
-- **Scope in Anatomy Atelier**:
-  - Catalog of 474 curated open-access medical imaging datasets across 13 anatomical regions (Neuro, Chest, Cardiac, Vascular, Abdomen, Pelvis, MSK, Breast, HeadNeck, Dental, WholeBody, Multi, Phantom) and 6 imaging modalities (CT, MRI, PET, X-ray, DXA, Ultrasound).
-  - Searchable by anatomical region, modality, machine learning task (segmentation, classification, detection), license, and cohort accession type.
-  - Interactive deep learning fine-tuning recipes: input resolutions, HU intensity normalization windows, loss formulations (Soft Dice + Weighted Cross-Entropy / Focal Tversky), spatial augmentations, and evaluation metrics.
-- **Calibrated Benchmark Volumetric Studies**:
-  - **LIDC-IDRI** (Lung Image Database Consortium, CC BY 3.0): Calibrated Thoracic CT volume with 4-radiologist consensus solitary pulmonary nodule (+45 HU) and aerated lung fields (-720 HU).
-  - **LiTS & BTCV** (Liver Tumor & Multi-Organ Segmentation, CC BY-NC 4.0 / Apache 2.0): Calibrated Abdominal CT volume featuring liver (+62 HU), Segment VIII focal lesion (+25 HU), spleen (+55 HU), and bilateral kidneys (+45 HU).
-  - **BraTS 2021** (RSNA-ASNR-MICCAI Brain Tumor Segmentation, CC BY 4.0): Calibrated multiparametric brain MRI with glioblastoma necrotic core (NCR), contrast-enhancing rim (ET), and peritumoral vasogenic edema (ED).
-  - **RSNA Lumbar Spine 2024** (Lumbar Spine Degeneration Challenge): Calibrated spine CT volume with L1-L5 vertebral bodies, thecal sac canal, and symptomatic L4-L5 disc protrusion.
-  - **TotalSegmentator v2** (117 Anatomical Classes, Apache 2.0): Cross-referenced organ definitions for automated volumetric segmentation.
+- **LIDC-IDRI** (Lung Image Database Consortium, CC BY 3.0): Calibrated Thoracic CT volume with 4-radiologist consensus solitary pulmonary nodule (+45 HU) and aerated lung fields (-720 HU).
+- **LiTS & BTCV** (Liver Tumor & Multi-Organ Segmentation, CC BY-NC 4.0 / Apache 2.0): Calibrated Abdominal CT volume featuring liver (+62 HU), Segment VIII focal lesion (+25 HU), spleen (+55 HU), and bilateral kidneys (+45 HU).
+- **BraTS 2021** (RSNA-ASNR-MICCAI Brain Tumor Segmentation, CC BY 4.0): Calibrated multiparametric brain MRI with glioblastoma necrotic core (NCR), contrast-enhancing rim (ET), and peritumoral vasogenic edema (ED).
+- **RSNA Lumbar Spine Degeneration Consortium**: Calibrated spine CT volume with L1-L5 vertebral bodies, thecal sac canal, and symptomatic L4-L5 disc protrusion.
+- **TotalSegmentator v2** (117 Anatomical Classes, Apache 2.0): Cross-referenced organ definitions for automated volumetric segmentation.
 
