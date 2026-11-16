@@ -47,7 +47,6 @@ import {
   Info,
   MapPin,
   RotateCcw,
-  Sparkles,
   Split,
   UploadCloud,
   X,
@@ -120,13 +119,13 @@ export function ImagingWorkspace({
     }));
   };
 
-  // 1-Click Easy Track: Automatically segment and reconstruct 3D anatomy without manual intermediate steps
+  // Automated Surface Reconstruction: Segments anatomical boundaries and reconstructs 3D surfaces
   const handleQuick3DReconstructionForVolume = useCallback(async (
     targetVol: MedicalVolume,
     targetReport?: AnatomicalLocationReport | null
   ) => {
     setIsProcessing(true);
-    setProcessingMessage("1-Click Auto Pipeline: Calibrating voxel densities and segmenting anatomical boundaries...");
+    setProcessingMessage("Reconstructing voxel densities and delineating anatomical boundaries via Hounsfield thresholds...");
 
     try {
       let structuresToSegment = selectedStructures.length > 0 ? selectedStructures : ["bone-spine", "liver", "lungs-bilateral"];
@@ -201,14 +200,14 @@ export function ImagingWorkspace({
     }
   }, [handleQuick3DReconstructionForVolume]);
 
-  // 1. Quick Load Reference Scans (supports standard review and 1-Click direct 3D generation)
+  // 1. Load Reference Benchmark Scans (supports slice-level MPR review and direct 3D surface reconstruction)
   const handleLoadReferenceStudy = useCallback((studyId: string, auto3D: boolean = false) => {
     sounds.playClick();
     setIsProcessing(true);
     setProcessingMessage(
       auto3D
-        ? "1-Click Auto Pipeline: Loading volumetric CT & synthesizing 3D anatomical model..."
-        : "Synthesizing calibrated volumetric CT density field..."
+        ? "Loading volumetric CT series & reconstructing 3D surface mesh..."
+        : "Loading calibrated benchmark volumetric CT series..."
     );
 
     setTimeout(() => {
@@ -681,14 +680,14 @@ export function ImagingWorkspace({
                       onClick={() => handleLoadReferenceStudy("study-ct-thorax", true)}
                       className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-sm transition-all"
                     >
-                      ⚡ 1-Click Demo Thorax CT (3D)
+                      Load Thorax CT Benchmark (3D)
                     </button>
                     <button
                       type="button"
                       onClick={() => handleLoadReferenceStudy("study-ct-abdomen", true)}
                       className="px-3 py-1.5 rounded-xl bg-[#2c2623] hover:bg-neutral-800 text-white font-bold text-xs shadow-sm transition-all"
                     >
-                      ⚡ 1-Click Demo Abdomen CT (3D)
+                      Load Abdomen CT Benchmark (3D)
                     </button>
                   </div>
                 </div>
@@ -779,8 +778,8 @@ export function ImagingWorkspace({
                         onClick={() => handleLoadReferenceStudy(study.id, true)}
                         className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
                       >
-                        <Sparkles size={13} />
-                        <span>⚡ 1-Click 3D Model</span>
+                        <Boxes size={13} />
+                        <span>Generate 3D Surface</span>
                       </button>
                     </div>
                   </div>
@@ -809,10 +808,10 @@ export function ImagingWorkspace({
                   type="button"
                   onClick={handleQuick3DReconstruction}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs sm:text-sm font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
-                  title="Generate 3D Model Immediately without manual tuning"
+                  title="Direct 3D surface mesh extraction from volumetric densities"
                 >
-                  <Sparkles size={16} />
-                  <span>1-Click Auto 3D Model</span>
+                  <Boxes size={16} />
+                  <span>Direct 3D Reconstruction</span>
                 </button>
 
                 <button
@@ -861,21 +860,21 @@ export function ImagingWorkspace({
 
                 {/* Spatial Finding & Detected Structures Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Where & What Happened Explanation */}
+                  {/* Anatomical Survey & Series Description */}
                   <div className="md:col-span-2 space-y-2 p-3.5 rounded-2xl bg-white/60 dark:bg-neutral-800/40 border border-neutral-200/60 dark:border-neutral-700/60">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                       <Info size={13} />
-                      <span>Anatomical Analysis & Findings:</span>
+                      <span>Anatomical Survey & Series Description:</span>
                     </span>
                     <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-sans">
                       {locationReport.explanation}
                     </p>
                   </div>
 
-                  {/* Detected Anatomical Structures */}
+                  {/* Identified Anatomical Landmarks */}
                   <div className="space-y-2 p-3.5 rounded-2xl bg-white/60 dark:bg-neutral-800/40 border border-neutral-200/60 dark:border-neutral-700/60">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                      Recognized Structures ({locationReport.detectedStructures.length}):
+                      Identified Anatomical Landmarks ({locationReport.detectedStructures.length}):
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {locationReport.detectedStructures.map((struct) => (
@@ -890,8 +889,8 @@ export function ImagingWorkspace({
                           <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                             {struct.name}
                           </span>
-                          <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400">
-                            {Math.round(struct.confidence * 100)}%
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/20">
+                            {struct.attenuationRange || struct.spatialQuadrant || "Calibrated"}
                           </span>
                         </div>
                       ))}
@@ -1035,13 +1034,13 @@ export function ImagingWorkspace({
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                        <span>WHERE on Body:</span>
+                        <span>Anatomical Level & Spatial Extent:</span>
                         <span className="text-amber-600 dark:text-amber-400 font-extrabold">
                           {locationReport.region} ({locationReport.estimatedLevel})
                         </span>
                       </h3>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Mapped to 3D Human Body Atlas at {Math.round(locationReport.bodyZNormalized * 100)}% height level.
+                        Mapped to standard anatomical reference coordinate at {Math.round(locationReport.bodyZNormalized * 100)}% cranial-caudal axis.
                       </p>
                     </div>
                   </div>
@@ -1057,7 +1056,7 @@ export function ImagingWorkspace({
                   <div className="md:col-span-2 space-y-1.5 p-3 rounded-2xl bg-white/60 dark:bg-neutral-800/40 border border-neutral-200/60 dark:border-neutral-700/60">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                       <Info size={13} />
-                      <span>WHAT HAPPENED & ANATOMICAL FINDINGS:</span>
+                      <span>SERIES SURVEY & ANATOMICAL CORRELATION:</span>
                     </span>
                     <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-sans">
                       {locationReport.explanation}
@@ -1066,7 +1065,7 @@ export function ImagingWorkspace({
 
                   <div className="space-y-1.5 p-3 rounded-2xl bg-white/60 dark:bg-neutral-800/40 border border-neutral-200/60 dark:border-neutral-700/60">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                      Recognized Anatomy ({locationReport.detectedStructures.length}):
+                      Anatomical Landmarks ({locationReport.detectedStructures.length}):
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {locationReport.detectedStructures.map((struct) => (
@@ -1080,6 +1079,9 @@ export function ImagingWorkspace({
                           />
                           <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                             {struct.name}
+                          </span>
+                          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                            {struct.attenuationRange || struct.spatialQuadrant || "Calibrated"}
                           </span>
                         </div>
                       ))}

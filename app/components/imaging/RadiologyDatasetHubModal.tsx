@@ -178,7 +178,7 @@ export function RadiologyDatasetHubModal({
               }`}
             >
               <Sparkles size={14} className={calibratedOnly ? "text-amber-400" : ""} />
-              <span>⚡ Calibrated 1-Click Benchmarks Only</span>
+              <span>Verified Clinical Benchmarks</span>
             </button>
           </div>
 
@@ -393,7 +393,7 @@ export function RadiologyDatasetHubModal({
                           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
                           <Sparkles size={13} />
-                          <span>⚡ Load 2D/3D Benchmark Study</span>
+                          <span>Load Benchmark Volumetric Study</span>
                         </button>
                       )}
 

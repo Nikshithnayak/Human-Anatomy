@@ -18,9 +18,11 @@ export interface AnatomicalLocationReport {
   detectedStructures: {
     name: string;
     description: string;
-    confidence: number;
+    attenuationRange?: string;
+    spatialQuadrant?: string;
     recommendedColor: string;
     structureId: string;
+    confidence?: number;
   }[];
   densityProfile: {
     meanBrightness: number;
@@ -145,23 +147,26 @@ export function analyzeScanAnatomy(
         {
           name: "Cranial Vault / Calvarium",
           description: "High-attenuation cortical bone surrounding cranial vault",
-          confidence: 0.94,
+          attenuationRange: "+600 to +1500 HU",
+          spatialQuadrant: "Calvarial Ring",
           recommendedColor: "#f5ebdc",
           structureId: "bone-spine",
         },
         {
           name: "Cerebral Hemispheres & Parenchyma",
-          description: "Symmetrical cerebral cortex, white matter, and deep gray nuclei",
-          confidence: 0.89,
+          description: "Symmetrical supratentorial brain parenchyma with grey-white matter differentiation",
+          attenuationRange: "+30 to +45 HU",
+          spatialQuadrant: "Supratentorial Bilateral",
           recommendedColor: "#a855f7",
           structureId: "brain-parenchyma",
         },
         {
-          name: "Focal Lesion / Tumor ROI",
-          description: "Glioblastoma core and vasogenic peritumoral edema region",
-          confidence: 0.85,
-          recommendedColor: "#ec4899",
-          structureId: "brain-tumor-edema",
+          name: "Ventricular System & CSF Spaces",
+          description: "Central cerebrospinal fluid reservoirs and lateral ventricular horns",
+          attenuationRange: "+0 to +15 HU",
+          spatialQuadrant: "Central / Midline",
+          recommendedColor: "#38bdf8",
+          structureId: "brain-parenchyma",
         },
       ],
       densityProfile: {
@@ -171,7 +176,7 @@ export function analyzeScanAnatomy(
         hasSolidVisceralParenchyma: true,
       },
       explanation:
-        "Dense circumferential cranial bone ring surrounding symmetrical cerebral parenchyma and central CSF spaces identified at intracranial vertex level.",
+        "Characteristic intracranial cross-section: prominent circumferential cranial bone ring surrounding symmetrical cerebral parenchyma and central CSF spaces at intracranial vertex level.",
     };
   } else if (hasBilateralAeration || (hasSpinalBone && rightAeration > 150)) {
     return {
@@ -182,36 +187,41 @@ export function analyzeScanAnatomy(
       detectedStructures: [
         {
           name: "Vertebral Spine & Neural Canal",
-          description: "Posterior midline osseous vertebral body and spinal canal",
-          confidence: 0.96,
+          description: "Dorsal midline osseous vertebral body and spinal canal",
+          attenuationRange: "+400 to +1200 HU",
+          spatialQuadrant: "Posterior Midline",
           recommendedColor: "#f5ebdc",
           structureId: "bone-spine",
         },
         {
           name: "Rib Cage & Sternum",
-          description: "Lateral thoracic cage osseous arcs and anterior sternum",
-          confidence: 0.91,
+          description: "Thoracic osseous cage arcs and anterior sternal plate",
+          attenuationRange: "+300 to +1000 HU",
+          spatialQuadrant: "Anterolateral Margin",
           recommendedColor: "#e1d7c3",
           structureId: "bone-ribs",
         },
         {
           name: "Bilateral Lung Parenchyma",
-          description: "Low-attenuation aerated pleural spaces and bronchovascular trees",
-          confidence: 0.95,
+          description: "Low-attenuation aerated pleural spaces and bronchovascular markings",
+          attenuationRange: "-900 to -600 HU",
+          spatialQuadrant: "Bilateral Hemithorax",
           recommendedColor: "#64b4f0",
           structureId: "lungs-bilateral",
         },
         {
           name: "Heart & Mediastinum",
           description: "Central cardiac silhouette, ventricles, and mediastinal vascular bundle",
-          confidence: 0.92,
+          attenuationRange: "+30 to +60 HU",
+          spatialQuadrant: "Anterior Mediastinum",
           recommendedColor: "#eb4b55",
           structureId: "heart-mediastinum",
         },
         {
           name: "Thoracic Aorta",
-          description: "Retrocardiac contrast-enhanced aorta anterior to spine",
-          confidence: 0.88,
+          description: "Descending thoracic aorta anterior to spine and posteromedial to heart",
+          attenuationRange: "+35 to +50 HU",
+          spatialQuadrant: "Posteromedial",
           recommendedColor: "#dc2626",
           structureId: "thoracic-aorta",
         },
@@ -223,7 +233,7 @@ export function analyzeScanAnatomy(
         hasSolidVisceralParenchyma: true,
       },
       explanation:
-        "Characteristic thoracic cross-section: prominent bilateral low-density pulmonary fields, central cardiac shadow, dorsal spine, and peripheral rib cage.",
+        "Characteristic mid-thoracic cross-section: prominent bilateral low-density pulmonary fields, central cardiac shadow, dorsal spine, and peripheral rib cage.",
     };
   } else {
     return {
@@ -234,22 +244,25 @@ export function analyzeScanAnatomy(
       detectedStructures: [
         {
           name: "Lumbar Vertebra & Posterior Elements",
-          description: "Dorsal midline lumbar vertebral body",
-          confidence: 0.95,
+          description: "Dorsal midline lumbar vertebral body and posterior neural arch",
+          attenuationRange: "+400 to +1200 HU",
+          spatialQuadrant: "Posterior Midline",
           recommendedColor: "#f5ebdc",
           structureId: "bone-spine",
         },
         {
           name: "Liver Parenchyma",
           description: "Right upper quadrant solid parenchymal organ",
-          confidence: 0.92,
+          attenuationRange: "+50 to +70 HU",
+          spatialQuadrant: "Right Hypochondrium",
           recommendedColor: "#a05a3c",
           structureId: "liver",
         },
         {
           name: "Bilateral Kidneys",
-          description: "Retroperitoneal bilateral posterior renal contours",
-          confidence: 0.89,
+          description: "Retroperitoneal bilateral reniform contours and renal parenchyma",
+          attenuationRange: "+30 to +50 HU",
+          spatialQuadrant: "Retroperitoneum",
           recommendedColor: "#b44678",
           structureId: "kidneys-bilateral",
         },
@@ -261,7 +274,7 @@ export function analyzeScanAnatomy(
         hasSolidVisceralParenchyma: true,
       },
       explanation:
-        "Abdominal cross-section: solid parenchymal viscera (liver in right hemiabdomen, posterior kidneys) and posterior lumbar vertebral body without pulmonary aeration.",
+        "Abdominal cross-section: solid parenchymal viscera (liver in right hemiabdomen, posterior retroperitoneal kidneys) and posterior lumbar vertebral body without pulmonary aeration.",
     };
   }
 }

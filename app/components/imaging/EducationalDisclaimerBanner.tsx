@@ -36,10 +36,10 @@ export function EducationalDisclaimerBanner({ stage = "raw" }: EducationalDiscla
         </div>
         <div>
           <span className="font-bold text-amber-900 dark:text-amber-300 mr-2">
-            Educational & Research Visualization Only:
+            Research & Educational Visualization Workstation:
           </span>
           <span className="text-neutral-600 dark:text-neutral-400 text-[11px]">
-            Not clinically certified for diagnosis, pathology detection, treatment planning, or surgical navigation.
+            DICOM research viewer. Not FDA 510(k) cleared or CE-marked for primary diagnostic interpretation, treatment planning, or surgical navigation.
           </span>
         </div>
       </div>
