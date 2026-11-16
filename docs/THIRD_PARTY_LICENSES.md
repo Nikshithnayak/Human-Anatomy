@@ -155,6 +155,17 @@ This document provides formal legal attribution, repository URLs, author credits
 
 ---
 
+## 12. Layered Body Atlas
+- **Original Project**: [Layered Body Atlas](https://bodyatlas.github.io/) / [GitHub Repository](https://github.com/bodyatlas/bodyatlas.github.io)
+- **License**: Open Educational Project (MIT-compatible static web application)
+- **Exact Component Used in Anatomy Atelier:**
+  - Procedural anatomical modeling engine (14 system modules, 1,310 structures) driven by Three.js and shared anatomical landmarks (`external/body-atlas/`, `public/body-atlas/`).
+  - 10-layer progressive dissection peeling (skin, fat, superficial/deep muscles, vessels, nerves, lymphatics, organs, glands, skeleton).
+  - Multiplanar cross-section slicing (sagittal X, axial Y, coronal Z), ghost shell rendering, and bilateral male/female body models.
+  - Integrated in `app/components/atlas/LayeredBodyAtlasView.tsx` with bidirectional selection, clinical notes inspection, and deep links to Organ Atelier.
+
+---
+
 ## Regulatory and Medical Safety Notice
 
 > **IMPORTANT DISCLAIMER:**

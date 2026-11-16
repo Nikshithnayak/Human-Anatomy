@@ -45,7 +45,7 @@ import type { OrganId } from "../../lib/anatomy-data";
 import { EDITIONS, edition_, type Sex } from "./anatomy";
 import { say, type Language } from "./i18n";
 
-export type AtlasEditionChoice = Sex | "z-anatomy";
+export type AtlasEditionChoice = Sex | "z-anatomy" | "body-atlas";
 
 const ORGAN_KEYWORDS: { pattern: RegExp; organId: OrganId; name: string }[] = [
   { pattern: /\b(heart|cardiac|myocardium|ventricle|atrium|aorta|mitral|tricuspid|pericardium|coronary)\b/i, organId: "heart", name: "Heart" },
@@ -346,6 +346,14 @@ export function ZAnatomyAtlasView({
                 {edition_(e.sex, language).label}
               </button>
             ))}
+            <button
+              type="button"
+              className="edition-pill"
+              aria-pressed={false}
+              onClick={() => onSelectEdition("body-atlas")}
+            >
+              Layered Atlas · 1,310
+            </button>
             <button
               type="button"
               className="edition-pill active"

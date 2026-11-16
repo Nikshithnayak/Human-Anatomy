@@ -27,6 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import AnatomyScene from './scene';
 import { ZAnatomyAtlasView, type AtlasEditionChoice } from './ZAnatomyAtlasView';
+import { LayeredBodyAtlasView } from './LayeredBodyAtlasView';
 import {
   EDITIONS,
   SYSTEMS,
@@ -107,7 +108,7 @@ export function HumanAtlasViewer({
   theme = 'light',
 }: HumanAtlasViewerProps) {
   const detailTitle = useRef<HTMLHeadingElement>(null);
-  const [atlasMode, setAtlasMode] = useState<'standard' | 'z-anatomy'>('standard');
+  const [atlasMode, setAtlasMode] = useState<'standard' | 'z-anatomy' | 'body-atlas'>('standard');
   const [sex, setSex] = useState<Sex>(initialSex);
   const [fullscreen, setFullscreen] = useState(false);
 
@@ -346,6 +347,10 @@ export function HumanAtlasViewer({
       setAtlasMode('z-anatomy');
       return;
     }
+    if (choice === 'body-atlas') {
+      setAtlasMode('body-atlas');
+      return;
+    }
     setAtlasMode('standard');
     handleSexChange(choice);
   };
@@ -353,6 +358,18 @@ export function HumanAtlasViewer({
   if (atlasMode === 'z-anatomy') {
     return (
       <ZAnatomyAtlasView
+        theme={theme}
+        language={language}
+        onSelectEdition={handleEditionChoice}
+        onOpenInAtelier={onOpenInAtelier}
+        onSwitchToAtelier={onSwitchToAtelier}
+      />
+    );
+  }
+
+  if (atlasMode === 'body-atlas') {
+    return (
+      <LayeredBodyAtlasView
         theme={theme}
         language={language}
         onSelectEdition={handleEditionChoice}
@@ -406,6 +423,14 @@ export function HumanAtlasViewer({
                 {edition_(e.sex, language).label}
               </button>
             ))}
+            <button
+              type="button"
+              className="edition-pill"
+              aria-pressed={false}
+              onClick={() => handleEditionChoice('body-atlas')}
+            >
+              Layered Atlas · 1,310
+            </button>
             <button
               type="button"
               className="edition-pill"

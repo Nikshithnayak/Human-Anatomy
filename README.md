@@ -28,7 +28,7 @@
 
 | Module | Core Capabilities |
 |---|---|
-| **Human Atlas** | Three switchable full-body atlases (`Male` 2,234 meshes, `Female` 1,217 meshes, `Z-Anatomy` 2,827 meshes across 7 Draco GLB systems), gzip chunk streaming, `three-mesh-bvh` picking, radial explosion / depth peel sliders, live 3D camera tour, search, and TA2 Latin relationships. |
+| **Human Atlas** | Four switchable full-body atlases (`Male` 2,234 meshes, `Female` 1,217 meshes, `Layered Body Atlas` 1,310 procedural structures across 14 systems, and `Z-Anatomy` 2,827 meshes across 7 Draco GLB systems), 10-layer progressive dissection peel slider, multiplanar cross-section slicing (X/Y/Z), gzip chunk streaming, `three-mesh-bvh` picking, radial explosion, live 3D camera tour, search, and TA2 Latin relationships. |
 | **Organ Atelier** | High-detail GLB dissection viewer across 9 organs (`Heart`, `Brain`, `Lungs`, `Liver`, `Kidneys`, `Eyeball`, `Intestine`, `Pancreas`, `Skin`) with live physiological motion, cross-section slicing, layer controls, anatomy quizzes, and histology/clinical inspection cards. |
 | **Radiology Lab** | Client-side DICOM Part 10 parser & HIPAA scrubber, 2×2 Quad MPR (Axial/Coronal/Sagittal), calibrated calipers/angle/ROI & HU probe tools (`dicom-parser` + `dcmjs` TID-1500 SR export), 3D surface mesh generation, and Synchronized Dual-Viewport Normal vs. Abnormal 3D Pathology Lab. **Fully integrated with Jung Oh Lee's Radiology Dataset Hub (474 datasets)** featuring instant facet search, fine-tuning protocols (nnU-Net, Swin UNETR, SegResNet), calibrated HU attenuation ladder, and 1-click loading for premier benchmarks: LIDC-IDRI (Pulmonary Nodule CT), LiTS & BTCV (Hepatic Lesion Abdominal CT), BraTS 2021 (Multiparametric Neuro-Oncology MRI), and RSNA Lumbar Spine 2024 (Spine Degeneration CT). |
 | **Nerve Explorer** | Brachial plexus B-mode ultrasound studio backed by a real exported `SegFormer (mit_b0) + ConvLSTM` ONNX model (`18.52 MB`) running locally via `onnxruntime-web` WASM or Python CLI (`services/nerve_explorer/run_inference.py`), computing calibrated CSA ($\text{mm}^2$) and nerve flattening ratios alongside a synchronized 3D C4–T1 cervical spine & plexus view. |
@@ -42,7 +42,7 @@
 - **3D & Spatial Graphics:** Three.js v0.185.1, `three-mesh-bvh`, Meshopt + Draco decoders, GSAP
 - **Medical Imaging & ML:** `dicom-parser`, `dcmjs`, `onnxruntime-web` (`public/models/brachial-plexus.onnx`), Jung Oh Lee's Radiology Dataset Hub (474 datasets, MIT License)
 - **UI & Styling:** Tailwind CSS 4, Lucide Icons, Web Audio feedback
-- **Validation & Testing:** ESLint (`--max-warnings=0`), `tsc --noEmit`, `vinext build`, Next.js build, Node.js test runner (`node --test`, 27/27 tests)
+- **Validation & Testing:** ESLint (`--max-warnings=0`), `tsc --noEmit`, `vinext build`, Next.js build, Node.js test runner (`node --test`, 31/31 tests)
 
 ---
 

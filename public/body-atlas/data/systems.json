@@ -1,0 +1,129 @@
+{
+  "systems": [
+    {
+      "id": "integumentary",
+      "name": "Integumentary (skin)",
+      "color": "#d9a982",
+      "partCount": 47
+    },
+    {
+      "id": "skeletal",
+      "name": "Skeletal",
+      "color": "#e9dfc7",
+      "partCount": 295
+    },
+    {
+      "id": "muscular",
+      "name": "Muscular",
+      "color": "#b03a3a",
+      "partCount": 232
+    },
+    {
+      "id": "cardiovascular",
+      "name": "Cardiovascular",
+      "color": "#d3363b",
+      "partCount": 119
+    },
+    {
+      "id": "respiratory",
+      "name": "Respiratory",
+      "color": "#e2a5a5",
+      "partCount": 72
+    },
+    {
+      "id": "digestive",
+      "name": "Digestive",
+      "color": "#d9968f",
+      "partCount": 37
+    },
+    {
+      "id": "urinary",
+      "name": "Urinary",
+      "color": "#8b3b3b",
+      "partCount": 19
+    },
+    {
+      "id": "reproductive",
+      "name": "Reproductive",
+      "color": "#c76a7a",
+      "partCount": 33
+    },
+    {
+      "id": "nervous",
+      "name": "Nervous",
+      "color": "#e8d24a",
+      "partCount": 243
+    },
+    {
+      "id": "endocrine",
+      "name": "Endocrine & glands",
+      "color": "#e0a85c",
+      "partCount": 30
+    },
+    {
+      "id": "lymphatic",
+      "name": "Lymphatic & immune",
+      "color": "#79c27a",
+      "partCount": 37
+    },
+    {
+      "id": "sensory",
+      "name": "Sensory (eye & ear)",
+      "color": "#5a7a9a",
+      "partCount": 146
+    }
+  ],
+  "layers": [
+    {
+      "layer": 1,
+      "name": "Skin",
+      "partCount": 51
+    },
+    {
+      "layer": 2,
+      "name": "Fat & fascia",
+      "partCount": 21
+    },
+    {
+      "layer": 3,
+      "name": "Superficial muscles",
+      "partCount": 105
+    },
+    {
+      "layer": 4,
+      "name": "Deep muscles",
+      "partCount": 149
+    },
+    {
+      "layer": 5,
+      "name": "Blood vessels",
+      "partCount": 101
+    },
+    {
+      "layer": 6,
+      "name": "Nerves",
+      "partCount": 193
+    },
+    {
+      "layer": 7,
+      "name": "Lymphatics",
+      "partCount": 37
+    },
+    {
+      "layer": 8,
+      "name": "Organs",
+      "partCount": 325
+    },
+    {
+      "layer": 9,
+      "name": "Glands",
+      "partCount": 33
+    },
+    {
+      "layer": 10,
+      "name": "Skeleton",
+      "partCount": 295
+    }
+  ],
+  "totalParts": 1310
+}
