@@ -284,11 +284,10 @@ export function QuizCenter({
                   {summaryData.review.map((item, idx) => (
                     <div
                       key={idx}
-                      className={`p-4 rounded-2xl border text-xs space-y-2 ${
-                        item.isCorrect
-                          ? "bg-emerald-50/70 border-emerald-200 text-emerald-950"
-                          : "bg-rose-50/70 border-rose-200 text-rose-950"
-                      }`}
+                      className={`p-4 rounded-2xl border text-xs space-y-2 ${item.isCorrect
+                        ? "bg-emerald-50/70 border-emerald-200 text-emerald-950"
+                        : "bg-rose-50/70 border-rose-200 text-rose-950"
+                        }`}
                     >
                       <div className="flex items-start gap-2.5">
                         {item.isCorrect ? (
@@ -370,13 +369,12 @@ export function QuizCenter({
                             className={`w-full text-left p-3.5 rounded-2xl border text-xs sm:text-sm flex items-center gap-3 transition-all duration-150 ${btnStyle}`}
                           >
                             <span
-                              className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ${
-                                isAnswered && oIdx === currentQ.correctIndex
-                                  ? "bg-emerald-500 text-white border-emerald-500"
-                                  : isAnswered && selectedOption === oIdx
-                                    ? "bg-rose-500 text-white border-rose-500"
-                                    : "border-neutral-300 text-neutral-600"
-                              }`}
+                              className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold shrink-0 ${isAnswered && oIdx === currentQ.correctIndex
+                                ? "bg-emerald-500 text-white border-emerald-500"
+                                : isAnswered && selectedOption === oIdx
+                                  ? "bg-rose-500 text-white border-rose-500"
+                                  : "border-neutral-300 text-neutral-600"
+                                }`}
                             >
                               {String.fromCharCode(65 + oIdx)}
                             </span>

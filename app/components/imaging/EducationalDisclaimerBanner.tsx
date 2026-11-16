@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 interface EducationalDisclaimerBannerProps {
   stage?: "raw" | "segmented" | "reconstructed" | "explorer";

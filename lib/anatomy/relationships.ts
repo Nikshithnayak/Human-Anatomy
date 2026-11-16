@@ -1,4 +1,4 @@
-import type { AnatomicalRelationship, StructureRelationshipProfile } from "@/integrations/anatomy/anatomy.types";
+import type { StructureRelationshipProfile } from "@/integrations/anatomy/anatomy.types";
 
 /**
  * Verified Anatomical Relationships Database

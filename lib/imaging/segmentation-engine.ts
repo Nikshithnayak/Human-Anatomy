@@ -140,6 +140,78 @@ export const SUPPORTED_STRUCTURES: AnatomicalStructureDefinition[] = [
     recommendedHURange: [30, 80],
     description: "Renal cortex, medulla, and nephric contours",
   },
+  {
+    id: "lung-nodule",
+    labelIndex: 8,
+    name: "Pulmonary Nodule (LIDC-IDRI Benchmark)",
+    system: "respiratory",
+    organId: "lungs",
+    fmaConceptId: "FMA7309",
+    defaultColor: [249, 115, 22],
+    colorHex: "#f97316",
+    recommendedHURange: [20, 90],
+    description: "Solid / semi-solid pulmonary lesion calibrated from LIDC-IDRI consensus contours",
+  },
+  {
+    id: "liver-lesion",
+    labelIndex: 9,
+    name: "Hepatic Lesion / HCC (LiTS Benchmark)",
+    system: "digestive",
+    organId: "liver",
+    fmaConceptId: "FMA7197",
+    defaultColor: [239, 68, 68],
+    colorHex: "#ef4444",
+    recommendedHURange: [15, 40],
+    description: "Hypodense hepatic parenchymal focal lesion calibrated from LiTS challenge",
+  },
+  {
+    id: "brain-parenchyma",
+    labelIndex: 10,
+    name: "Brain Parenchyma (BraTS Benchmark)",
+    system: "nervous",
+    organId: "brain",
+    fmaConceptId: "FMA50801",
+    defaultColor: [168, 85, 247],
+    colorHex: "#a855f7",
+    recommendedHURange: [20, 60],
+    description: "Cerebral cortex, deep gray matter, and white matter tracks",
+  },
+  {
+    id: "brain-tumor-edema",
+    labelIndex: 11,
+    name: "Tumor Core & Edema (BraTS 2021)",
+    system: "nervous",
+    organId: "brain",
+    fmaConceptId: "FMA50801",
+    defaultColor: [236, 72, 153],
+    colorHex: "#ec4899",
+    recommendedHURange: [65, 120],
+    description: "Glioblastoma contrast enhancement and vasogenic edema sub-regions",
+  },
+  {
+    id: "lumbar-disc-herniation",
+    labelIndex: 12,
+    name: "Herniated Disc & Stenosis (RSNA Benchmark)",
+    system: "skeletal",
+    organId: "skin",
+    fmaConceptId: "FMA11887",
+    defaultColor: [234, 179, 8],
+    colorHex: "#eab308",
+    recommendedHURange: [45, 110],
+    description: "Degenerative intervertebral disc protrusion encroaching thecal sac",
+  },
+  {
+    id: "spleen",
+    labelIndex: 13,
+    name: "Spleen (BTCV / TotalSegmentator)",
+    system: "lymphatic",
+    organId: "liver",
+    fmaConceptId: "FMA7196",
+    defaultColor: [139, 92, 246],
+    colorHex: "#8b5cf6",
+    recommendedHURange: [35, 75],
+    description: "Left hypochondrium splenic parenchyma",
+  },
 ];
 
 /**
@@ -243,6 +315,60 @@ export class HounsfieldThresholdProvider implements SegmentationProvider {
                 // Kidneys are retroperitoneal bilateral posterior
                 const isRetro = (xNorm >= 0.22 && xNorm <= 0.42) || (xNorm >= 0.58 && xNorm <= 0.78);
                 if (isRetro && yNorm >= 0.55 && yNorm <= 0.82) {
+                  mask[idx] = s.labelIndex;
+                  voxelCounts[s.id]++;
+                  break;
+                }
+              } else if (s.id === "lung-nodule") {
+                // LIDC-IDRI nodule target: peripheral right upper lung
+                const dxNodule = (xNorm - 0.28) / 0.05;
+                const dyNodule = (yNorm - 0.42) / 0.05;
+                if (dxNodule * dxNodule + dyNodule * dyNodule <= 1.0 && zNorm >= 0.55 && zNorm <= 0.75) {
+                  mask[idx] = s.labelIndex;
+                  voxelCounts[s.id]++;
+                  break;
+                }
+              } else if (s.id === "liver-lesion") {
+                // LiTS focal lesion target: segment VIII of liver
+                const dxTumor = (xNorm - 0.32) / 0.06;
+                const dyTumor = (yNorm - 0.40) / 0.06;
+                if (dxTumor * dxTumor + dyTumor * dyTumor <= 1.0 && zNorm >= 0.35 && zNorm <= 0.55) {
+                  mask[idx] = s.labelIndex;
+                  voxelCounts[s.id]++;
+                  break;
+                }
+              } else if (s.id === "brain-parenchyma") {
+                // BraTS brain cerebrum contour
+                const dxBrain = (xNorm - 0.5) / 0.38;
+                const dyBrain = (yNorm - 0.5) / 0.42;
+                if (dxBrain * dxBrain + dyBrain * dyBrain <= 1.0) {
+                  mask[idx] = s.labelIndex;
+                  voxelCounts[s.id]++;
+                  break;
+                }
+              } else if (s.id === "brain-tumor-edema") {
+                // BraTS glioblastoma focus
+                const dxGBM = (xNorm - 0.62) / 0.09;
+                const dyGBM = (yNorm - 0.48) / 0.09;
+                if (dxGBM * dxGBM + dyGBM * dyGBM <= 1.0 && zNorm >= 0.35 && zNorm <= 0.65) {
+                  mask[idx] = s.labelIndex;
+                  voxelCounts[s.id]++;
+                  break;
+                }
+              } else if (s.id === "lumbar-disc-herniation") {
+                // RSNA lumbar posterior disc protrusion
+                const dxDisc = (xNorm - 0.5) / 0.08;
+                const dyDisc = (yNorm - 0.62) / 0.08;
+                if (dxDisc * dxDisc + dyDisc * dyDisc <= 1.0 && zNorm >= 0.35 && zNorm <= 0.52) {
+                  mask[idx] = s.labelIndex;
+                  voxelCounts[s.id]++;
+                  break;
+                }
+              } else if (s.id === "spleen") {
+                // Spleen: left upper quadrant posterior
+                const dxSpleen = (xNorm - 0.72) / 0.12;
+                const dySpleen = (yNorm - 0.52) / 0.14;
+                if (dxSpleen * dxSpleen + dySpleen * dySpleen <= 1.0 && zNorm >= 0.30 && zNorm <= 0.65) {
                   mask[idx] = s.labelIndex;
                   voxelCounts[s.id]++;
                   break;

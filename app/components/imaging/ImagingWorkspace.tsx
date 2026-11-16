@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { MedicalVolume, type VolumePlane } from "@/lib/imaging/volume-model";
 import {
   parseDicomSlice,
@@ -21,6 +21,8 @@ import {
   REFERENCE_STUDIES,
   generateReferenceThoracicVolume,
   generateReferenceAbdominalVolume,
+  generateReferenceNeuroVolume,
+  generateReferenceSpineVolume,
 } from "@/lib/imaging/reference-studies";
 import {
   convertImageToMedicalVolume,
@@ -31,6 +33,7 @@ import { MprSliceViewer } from "./MprSliceViewer";
 import { SegmentationReviewOverlay } from "./SegmentationReviewOverlay";
 import { PatientSpecific3DViewer } from "./PatientSpecific3DViewer";
 import { EducationalDisclaimerBanner } from "./EducationalDisclaimerBanner";
+import { RadiologyDatasetHubModal } from "./RadiologyDatasetHubModal";
 import { sounds } from "@/app/lib/sound";
 import {
   Activity,
@@ -40,18 +43,12 @@ import {
   ChevronRight,
   Crosshair,
   Database,
-  Eye,
   FileImage,
-  FileUp,
   Info,
-  Layers,
   MapPin,
   RotateCcw,
-  Scissors,
-  ShieldCheck,
   Sparkles,
   Split,
-  Target,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -82,9 +79,7 @@ interface ImagingWorkspaceProps {
 export function ImagingWorkspace({
   onClose,
   onReturnToCase,
-  onOpenAtlas,
   theme = "light",
-  language = "en",
   initialStudyId = null,
 }: ImagingWorkspaceProps) {
   const [workspaceMode, setWorkspaceMode] = useState<MedicalImagingCenterMode>("ct-mri-mpr");
@@ -94,6 +89,7 @@ export function ImagingWorkspace({
   const [locationReport, setLocationReport] = useState<AnatomicalLocationReport | null>(null);
   const [segmentation, setSegmentation] = useState<SegmentationResult | null>(null);
   const [reconstruction, setReconstruction] = useState<ReconstructionResult | null>(null);
+  const [isHubModalOpen, setIsHubModalOpen] = useState(false);
 
   const [activePlane, setActivePlane] = useState<VolumePlane>("axial");
   const [sliceIndices, setSliceIndices] = useState({
@@ -124,47 +120,53 @@ export function ImagingWorkspace({
     }));
   };
 
-  // Auto-load reference study if launched from a clinical case
-  useEffect(() => {
-    if (initialStudyId) {
-      handleLoadReferenceStudy(initialStudyId);
-    }
-  }, [initialStudyId]);
-
-  // 1. Quick Load Reference Scans (supports standard review and 1-Click direct 3D generation)
-  const handleLoadReferenceStudy = (studyId: string, auto3D: boolean = false) => {
-    sounds.playClick();
+  // 1-Click Easy Track: Automatically segment and reconstruct 3D anatomy without manual intermediate steps
+  const handleQuick3DReconstructionForVolume = useCallback(async (
+    targetVol: MedicalVolume,
+    targetReport?: AnatomicalLocationReport | null
+  ) => {
     setIsProcessing(true);
-    setProcessingMessage(
-      auto3D
-        ? "1-Click Auto Pipeline: Loading volumetric CT & synthesizing 3D anatomical model..."
-        : "Synthesizing calibrated volumetric CT density field..."
-    );
+    setProcessingMessage("1-Click Auto Pipeline: Calibrating voxel densities and segmenting anatomical boundaries...");
 
-    setTimeout(() => {
-      let loadedVolume: MedicalVolume;
-      if (studyId === "study-ct-abdomen") {
-        loadedVolume = generateReferenceAbdominalVolume();
-        setSelectedStructures(["bone-spine", "liver", "kidneys-bilateral"]);
-      } else {
-        loadedVolume = generateReferenceThoracicVolume();
-        setSelectedStructures([
-          "bone-spine",
-          "bone-ribs",
-          "lungs-bilateral",
-          "heart-mediastinum",
-          "thoracic-aorta",
-        ]);
+    try {
+      let structuresToSegment = selectedStructures.length > 0 ? selectedStructures : ["bone-spine", "liver", "lungs-bilateral"];
+      if (targetReport && targetReport.detectedStructures.length > 0) {
+        const detected = targetReport.detectedStructures
+          .map((s) => s.structureId)
+          .filter((id) => SUPPORTED_STRUCTURES.some((st) => st.id === id));
+        if (detected.length > 0) {
+          structuresToSegment = detected;
+          setSelectedStructures(detected);
+        }
       }
 
-      const report = analyzeMedicalVolumeAnatomy(loadedVolume);
-      loadVolumeAndReport(loadedVolume, report, auto3D);
+      const segResult = await segmentationEngine.segment(targetVol, {
+        structures: structuresToSegment,
+        algorithm: "hu-threshold",
+      });
+      setSegmentation(segResult);
+
+      setProcessingMessage("Generating interactive 3D anatomical meshes and preparing Three.js viewport...");
+      setTimeout(() => {
+        const reconResult = reconstructSurfacesFromSegmentation(targetVol, segResult, {
+          downsampleFactor: 1,
+          smoothingPasses: 2,
+          scaleMmToScene: 0.015,
+        });
+        setReconstruction(reconResult);
+        setStage("explorer-3d");
+        setIsProcessing(false);
+        sounds.playCelebration();
+      }, 350);
+    } catch (err) {
+      console.error("Quick 3D reconstruction error:", err);
+      setUploadError("Could not generate 3D model: " + (err instanceof Error ? err.message : "Internal engine error"));
       setIsProcessing(false);
-    }, 250);
-  };
+    }
+  }, [segmentationEngine, selectedStructures]);
 
   // Helper to load volume and anatomical classification report
-  const loadVolumeAndReport = (
+  const loadVolumeAndReport = useCallback((
     vol: MedicalVolume,
     report: AnatomicalLocationReport,
     auto3D: boolean = false
@@ -197,7 +199,56 @@ export function ImagingWorkspace({
       setStage("review-scan");
       sounds.playCelebration();
     }
-  };
+  }, [handleQuick3DReconstructionForVolume]);
+
+  // 1. Quick Load Reference Scans (supports standard review and 1-Click direct 3D generation)
+  const handleLoadReferenceStudy = useCallback((studyId: string, auto3D: boolean = false) => {
+    sounds.playClick();
+    setIsProcessing(true);
+    setProcessingMessage(
+      auto3D
+        ? "1-Click Auto Pipeline: Loading volumetric CT & synthesizing 3D anatomical model..."
+        : "Synthesizing calibrated volumetric CT density field..."
+    );
+
+    setTimeout(() => {
+      let loadedVolume: MedicalVolume;
+      if (studyId === "study-ct-abdomen") {
+        loadedVolume = generateReferenceAbdominalVolume();
+        setSelectedStructures(["bone-spine", "liver", "kidneys-bilateral", "spleen", "liver-lesion"]);
+      } else if (studyId === "study-mr-neuro") {
+        loadedVolume = generateReferenceNeuroVolume();
+        setSelectedStructures(["brain-parenchyma", "brain-tumor-edema"]);
+      } else if (studyId === "study-ct-spine") {
+        loadedVolume = generateReferenceSpineVolume();
+        setSelectedStructures(["bone-spine", "lumbar-disc-herniation"]);
+      } else {
+        loadedVolume = generateReferenceThoracicVolume();
+        setSelectedStructures([
+          "bone-spine",
+          "bone-ribs",
+          "lungs-bilateral",
+          "heart-mediastinum",
+          "thoracic-aorta",
+          "lung-nodule",
+        ]);
+      }
+
+      const report = analyzeMedicalVolumeAnatomy(loadedVolume);
+      loadVolumeAndReport(loadedVolume, report, auto3D);
+      setIsProcessing(false);
+    }, 250);
+  }, [loadVolumeAndReport]);
+
+  // Auto-load reference study if launched from a clinical case
+  useEffect(() => {
+    if (initialStudyId) {
+      const timer = setTimeout(() => {
+        handleLoadReferenceStudy(initialStudyId);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [initialStudyId, handleLoadReferenceStudy]);
 
   // 2. Client-Side Scan Upload (Fail-safe: Handles standard DICOM Part 10, Encapsulated DICOM, PNG/JPG/WebP/BMP)
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -244,7 +295,7 @@ export function ImagingWorkspace({
             const { volume: imgVol, report } = await convertImageToMedicalVolume(targetBlob);
             loadedVol = imgVol;
             loadedReport = report;
-          } catch (_imgErr) {
+          } catch {
             // If neither uncompressed DICOM nor image format worked, throw informative error with 1-click recovery
             throw new Error(
               "This file could not be parsed as an uncompressed DICOM or standard medical image (.dcm, .png, .jpg, .webp). You can test instantly with the curated reference scans below."
@@ -308,51 +359,6 @@ export function ImagingWorkspace({
       setIsProcessing(false);
       sounds.playCelebration();
     }, 300);
-  };
-
-  // 1-Click Easy Track: Automatically segment and reconstruct 3D anatomy without manual intermediate steps
-  const handleQuick3DReconstructionForVolume = async (
-    targetVol: MedicalVolume,
-    targetReport?: AnatomicalLocationReport | null
-  ) => {
-    setIsProcessing(true);
-    setProcessingMessage("1-Click Auto Pipeline: Calibrating voxel densities and segmenting anatomical boundaries...");
-
-    try {
-      let structuresToSegment = selectedStructures.length > 0 ? selectedStructures : ["bone-spine", "liver", "lungs-bilateral"];
-      if (targetReport && targetReport.detectedStructures.length > 0) {
-        const detected = targetReport.detectedStructures
-          .map((s) => s.structureId)
-          .filter((id) => SUPPORTED_STRUCTURES.some((st) => st.id === id));
-        if (detected.length > 0) {
-          structuresToSegment = detected;
-          setSelectedStructures(detected);
-        }
-      }
-
-      const segResult = await segmentationEngine.segment(targetVol, {
-        structures: structuresToSegment,
-        algorithm: "hu-threshold",
-      });
-      setSegmentation(segResult);
-
-      setProcessingMessage("Generating interactive 3D anatomical meshes and preparing Three.js viewport...");
-      setTimeout(() => {
-        const reconResult = reconstructSurfacesFromSegmentation(targetVol, segResult, {
-          downsampleFactor: 1,
-          smoothingPasses: 2,
-          scaleMmToScene: 0.015,
-        });
-        setReconstruction(reconResult);
-        setStage("explorer-3d");
-        setIsProcessing(false);
-        sounds.playCelebration();
-      }, 350);
-    } catch (err) {
-      console.error("Quick 3D reconstruction error:", err);
-      setUploadError("Could not generate 3D model: " + (err instanceof Error ? err.message : "Internal engine error"));
-      setIsProcessing(false);
-    }
   };
 
   const handleQuick3DReconstruction = async () => {
@@ -509,6 +515,18 @@ export function ImagingWorkspace({
           >
             <Database size={13} />
             <span>OHIF Viewers & DICOMweb</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              sounds.playClick();
+              setIsHubModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all bg-gradient-to-r from-amber-500/15 to-orange-500/15 hover:from-amber-500/25 hover:to-orange-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Database size={13} className="text-amber-500" />
+            <span>🩻 Radiology Dataset Hub (474)</span>
           </button>
         </div>
 
@@ -679,18 +697,31 @@ export function ImagingWorkspace({
 
             {/* Curated Educational Reference Scans */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 uppercase tracking-wider">
                     Or Load Educational Reference Scans
                   </h3>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Pre-calibrated volumetric CT scans with authentic Hounsfield Unit density fields ready for end-to-end 3D reconstruction.
+                    Pre-calibrated volumetric CT/MRI scans with authentic Hounsfield Unit density fields ready for end-to-end 3D reconstruction.
                   </p>
                 </div>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                  Instant Load
-                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sounds.playClick();
+                      setIsHubModalOpen(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition-all shadow-sm"
+                  >
+                    <Database size={13} />
+                    <span>Browse All 474 Open Datasets</span>
+                  </button>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                    Instant Load
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -712,6 +743,9 @@ export function ImagingWorkspace({
                       <h4 className="text-base font-bold text-neutral-900 dark:text-neutral-50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                         {study.title}
                       </h4>
+                      <div className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                        Benchmark: {study.benchmarkStandard}
+                      </div>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
                         {study.description}
                       </p>
@@ -1124,6 +1158,13 @@ export function ImagingWorkspace({
           </>
         )}
       </div>
+
+      {/* Radiology Dataset Hub (Jung Oh Lee) 474-Dataset Catalog Modal */}
+      <RadiologyDatasetHubModal
+        isOpen={isHubModalOpen}
+        onClose={() => setIsHubModalOpen(false)}
+        onLoadBenchmarkCase={(caseId, auto3D) => handleLoadReferenceStudy(caseId, auto3D)}
+      />
     </div>
   );
 }

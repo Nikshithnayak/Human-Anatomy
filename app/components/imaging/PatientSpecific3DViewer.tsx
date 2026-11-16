@@ -1,34 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
   type ReconstructionResult,
-  type ReconstructedStructureMesh,
   type ShadingPreset,
   createAnatomicalMaterial,
 } from "@/lib/imaging/surface-reconstruction";
 import type { MedicalVolume, VolumePlane } from "@/lib/imaging/volume-model";
 import { sounds } from "@/app/lib/sound";
 import {
-  Activity,
-  Compass,
-  Crosshair,
   Eye,
   EyeOff,
   Flame,
-  Layers,
-  Maximize2,
-  Minimize2,
   Pause,
   Play,
   RotateCcw,
   Scissors,
   Sparkles,
   Sun,
-  Tag,
-  Volume2,
 } from "lucide-react";
 
 interface PatientSpecific3DViewerProps {
@@ -53,8 +44,6 @@ export function PatientSpecific3DViewer({
   activePlane,
   sliceIndices,
   onSliceChange,
-  onPlaneChange,
-  theme = "light",
 }: PatientSpecific3DViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -64,6 +53,14 @@ export function PatientSpecific3DViewer({
   const slicePlaneMeshRef = useRef<THREE.Mesh | null>(null);
   const meshesMapRef = useRef<Map<string, THREE.Mesh>>(new Map());
   const clipPlaneRef = useRef<THREE.Plane>(new THREE.Plane(new THREE.Vector3(0, -1, 0), 0));
+
+  const activePlaneRef = useRef(activePlane);
+  const onSliceChangeRef = useRef(onSliceChange);
+
+  useEffect(() => {
+    activePlaneRef.current = activePlane;
+    onSliceChangeRef.current = onSliceChange;
+  }, [activePlane, onSliceChange]);
 
   const [autoRotate, setAutoRotate] = useState(false);
   const [selectedStructureId, setSelectedStructureId] = useState<string | null>(null);
@@ -256,9 +253,10 @@ export function PatientSpecific3DViewer({
           const my = -hitPoint.z / scale;
 
           const [vx, vy, vz] = volume.millimetersToVoxel(mx, my, mz);
-          if (activePlane === "axial") onSliceChange("axial", vz);
-          else if (activePlane === "coronal") onSliceChange("coronal", vy);
-          else onSliceChange("sagittal", vx);
+          const curPlane = activePlaneRef.current;
+          if (curPlane === "axial") onSliceChangeRef.current("axial", vz);
+          else if (curPlane === "coronal") onSliceChangeRef.current("coronal", vy);
+          else onSliceChangeRef.current("sagittal", vx);
         }
       }
     };

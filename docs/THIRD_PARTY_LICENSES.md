@@ -141,6 +141,20 @@ This document provides formal legal attribution, repository URLs, author credits
 
 ---
 
+## 11. Radiology Dataset Hub
+- **Repository URL:** `https://github.com/jungohlee/radiology-dataset-hub`
+- **Live Catalog URL:** `https://jungohlee.github.io/radiology-dataset-hub/`
+- **Author / Curator:** Jung Oh Lee
+- **Code & Catalog License:** MIT License
+- **Attribution Statement:**
+  > "Copyright (c) 2024 Jung Oh Lee. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction..."
+- **Exact Component Used in Anatomy Atelier:**
+  - Curated schema, metadata index, and vocabulary for 474 open-source CT, MRI, PET, and X-ray radiology datasets (`public/data/radiology-datasets.json`, `public/data/radiology-vocab.json`).
+  - Powers the interactive **Radiology Dataset Hub Explorer** modal, facet filtering engine (`lib/imaging/radiology-hub/dataset-hub-service.ts`), and deep learning fine-tuning recipes for clinical challenges (BraTS 2021, LIDC-IDRI, LiTS, RSNA Lumbar Spine 2024, TotalSegmentator v2).
+  - Ground truth reference calibration standards for 4 volumetric studies in the **Radiology Lab**.
+
+---
+
 ## Regulatory and Medical Safety Notice
 
 > **IMPORTANT DISCLAIMER:**

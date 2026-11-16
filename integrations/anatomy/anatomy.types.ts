@@ -1,4 +1,4 @@
-import type { SystemId, Sex } from "@/app/components/atlas/anatomy";
+import type { SystemId } from "@/app/components/atlas/anatomy";
 
 export type AnatomicalRelationshipType =
   | "origin"

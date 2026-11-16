@@ -89,16 +89,13 @@ export function analyzeScanAnatomy(
   pixels: Uint8ClampedArray
 ): AnatomicalLocationReport {
   let totalBrightness = 0;
-  let aeratedDarkCount = 0;
   let denseBoneCount = 0;
-  let softTissueCount = 0;
 
   // Bilateral hemithorax probe
   let leftAeration = 0;
   let rightAeration = 0;
   let posteriorDorsalBone = 0;
   let anteriorVentralBone = 0;
-  let rightUpperQuadrantSolid = 0;
 
   const totalPixels = width * height;
 
@@ -117,7 +114,6 @@ export function analyzeScanAnatomy(
 
       if (insideBody) {
         if (lum < 40) {
-          aeratedDarkCount++;
           if (xNorm < 0.45) rightAeration++;
           if (xNorm > 0.55) leftAeration++;
         } else if (lum > 200) {
@@ -127,11 +123,6 @@ export function analyzeScanAnatomy(
           }
           if (yNorm < 0.35 && Math.abs(xNorm - 0.5) < 0.18) {
             anteriorVentralBone++;
-          }
-        } else {
-          softTissueCount++;
-          if (xNorm < 0.50 && yNorm < 0.65) {
-            rightUpperQuadrantSolid++;
           }
         }
       }
@@ -159,11 +150,18 @@ export function analyzeScanAnatomy(
           structureId: "bone-spine",
         },
         {
-          name: "Cerebral Hemispheres",
+          name: "Cerebral Hemispheres & Parenchyma",
           description: "Symmetrical cerebral cortex, white matter, and deep gray nuclei",
           confidence: 0.89,
-          recommendedColor: "#e0a899",
-          structureId: "heart-mediastinum",
+          recommendedColor: "#a855f7",
+          structureId: "brain-parenchyma",
+        },
+        {
+          name: "Focal Lesion / Tumor ROI",
+          description: "Glioblastoma core and vasogenic peritumoral edema region",
+          confidence: 0.85,
+          recommendedColor: "#ec4899",
+          structureId: "brain-tumor-edema",
         },
       ],
       densityProfile: {
@@ -387,7 +385,6 @@ export async function convertImageToMedicalVolume(
 export function analyzeMedicalVolumeAnatomy(volume: MedicalVolume): AnatomicalLocationReport {
   // If seriesDescription indicates Thorax or Abdomen
   const desc = (volume.metadata.seriesDescription || "").toLowerCase();
-  const modality = volume.metadata.modality;
 
   // Extract middle axial slice
   const midZ = Math.floor(volume.depth / 2);

@@ -335,7 +335,6 @@ function parseDicomSliceLegacy(buffer: ArrayBuffer, fileNameFallback?: string): 
   let rescaleIntercept = -1024;
   let rescaleSlope = 1.0;
   let pixelDataOffset = -1;
-  let pixelDataLength = 0;
 
   // Simple, robust DICOM element reader
   while (offset + 8 <= length) {
@@ -400,7 +399,6 @@ function parseDicomSliceLegacy(buffer: ArrayBuffer, fileNameFallback?: string): 
             // First item is often Basic Offset Table; if length > 0 and subsequent items exist, take next
             if (itemLen > 0 && itemScan + itemLen < length) {
               pixelDataOffset = itemScan;
-              pixelDataLength = itemLen;
               break;
             }
           } else if (itemGroup === 0xfffe && itemElem === 0xe0dd) {
@@ -410,7 +408,6 @@ function parseDicomSliceLegacy(buffer: ArrayBuffer, fileNameFallback?: string): 
         }
         if (pixelDataOffset < 0) {
           pixelDataOffset = offset + 8;
-          pixelDataLength = length - pixelDataOffset;
         }
         break;
       } else {
@@ -499,7 +496,6 @@ function parseDicomSliceLegacy(buffer: ArrayBuffer, fileNameFallback?: string): 
     } else if (group === 0x7fe0 && element === 0x0010) {
       // Pixel Data Element found directly
       pixelDataOffset = offset;
-      pixelDataLength = elemLength;
       break;
     }
 
@@ -529,17 +525,14 @@ function parseDicomSliceLegacy(buffer: ArrayBuffer, fileNameFallback?: string): 
         ) {
           // Explicit 32-bit VR (OW, OB, OF, OD, UT, UN, UC, UR): skip tag(4) + vr(2) + reserved(2) + len(4) = 12
           pixelDataOffset = i + 12;
-          pixelDataLength = length - pixelDataOffset;
           break;
         } else if (c0 >= 65 && c0 <= 90 && c1 >= 65 && c1 <= 90) {
           // Other 16-bit Explicit VRs: skip tag(4) + vr(2) + len(2) = 8
           pixelDataOffset = i + 8;
-          pixelDataLength = length - pixelDataOffset;
           break;
         } else {
           // Implicit VR: skip tag(4) + len(4) = 8
           pixelDataOffset = i + 8;
-          pixelDataLength = length - pixelDataOffset;
           break;
         }
       }

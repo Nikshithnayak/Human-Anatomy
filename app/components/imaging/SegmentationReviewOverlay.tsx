@@ -11,10 +11,6 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
-  Layers,
-  RotateCcw,
-  ShieldAlert,
-  Sparkles,
   Sliders,
 } from "lucide-react";
 

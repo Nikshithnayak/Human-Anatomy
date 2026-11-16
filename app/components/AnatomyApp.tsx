@@ -8,7 +8,6 @@ import {
   Activity,
   Zap,
   BookOpen,
-  Stethoscope,
   Moon,
   Sun,
   Volume2,

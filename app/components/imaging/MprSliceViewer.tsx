@@ -107,6 +107,7 @@ export function MprSliceViewer({
   const [isDraggingWL, setIsDraggingWL] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, w: 400, l: 40 });
   const [showMetadata, setShowMetadata] = useState(false);
+  const [showHuCalibrationGuide, setShowHuCalibrationGuide] = useState(false);
 
   const activeSliceIndex = currentSliceIndices[activePlane];
   const maxSlices =
@@ -117,12 +118,14 @@ export function MprSliceViewer({
       : volume.width;
 
   // Reset annotations when switching volumes
-  useEffect(() => {
+  const [prevVolumeId, setPrevVolumeId] = useState(volume.id);
+  if (prevVolumeId !== volume.id) {
+    setPrevVolumeId(volume.id);
     setMeasurements([]);
     setDraftPoints([]);
     setIsCinePlaying(false);
     setProbeReading(null);
-  }, [volume.id]);
+  }
 
   // Render active single slice canvas
   useEffect(() => {
@@ -537,6 +540,20 @@ export function MprSliceViewer({
           >
             <Info size={15} />
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              sounds.playClick();
+              setShowHuCalibrationGuide((v) => !v);
+            }}
+            className={`px-2 py-1 rounded-lg transition-colors flex items-center gap-1 font-mono text-[11px] font-bold ${
+              showHuCalibrationGuide ? "bg-cyan-600 text-white" : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+            }`}
+            title="Hounsfield Unit (HU) Calibration Scale"
+          >
+            <Activity size={13} />
+            <span>HU Scale</span>
+          </button>
         </div>
       </div>
 
@@ -875,6 +892,64 @@ export function MprSliceViewer({
                 <div><span className="text-neutral-500">Slice Thickness:</span> {volume.metadata.sliceThickness} mm</div>
                 <div className="text-[10px] text-amber-400/90 pt-1 border-t border-neutral-800">
                   ✓ Patient Name/ID masked (OHIF Privacy-first)
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Calibrated Hounsfield Unit (HU) Reference Scale Card */}
+          {showHuCalibrationGuide && (
+            <div className="absolute top-3 right-3 w-80 p-4 rounded-2xl bg-neutral-900/95 border border-cyan-500/40 shadow-2xl backdrop-blur-lg text-xs space-y-2.5 z-20">
+              <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+                <span className="font-bold text-cyan-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <Activity size={13} />
+                  Calibrated Hounsfield (HU) Scale
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowHuCalibrationGuide(false)}
+                  className="text-neutral-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="text-[11px] text-neutral-400">
+                Physical radiodensity attenuation standards calibrated against LIDC-IDRI, LiTS & RSNA benchmarks.
+              </p>
+
+              <div className="space-y-1 font-mono text-[10px]">
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-cyan-300 font-semibold">Air / Background</span>
+                  <span className="text-neutral-400">-1000 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-sky-300 font-semibold">Lung Parenchyma</span>
+                  <span className="text-neutral-400">-700 to -500 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-amber-200 font-semibold">Fat (Subcutaneous/Visceral)</span>
+                  <span className="text-neutral-400">-120 to -80 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-blue-300 font-semibold">Water / Pure CSF</span>
+                  <span className="text-neutral-400">0 to +15 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-rose-300 font-semibold">Soft Tissue & Muscle</span>
+                  <span className="text-neutral-400">+35 to +55 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-red-400 font-semibold">Contrast Blood Pool / Aorta</span>
+                  <span className="text-neutral-400">+180 to +300 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-amber-400 font-semibold">Cancellous / Trabecular Bone</span>
+                  <span className="text-neutral-400">+300 to +700 HU</span>
+                </div>
+                <div className="flex items-center justify-between p-1 rounded bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-orange-400 font-semibold">Dense Cortical Bone</span>
+                  <span className="text-neutral-400">+1000 to +1800 HU</span>
                 </div>
               </div>
             </div>

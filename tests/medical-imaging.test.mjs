@@ -19,6 +19,8 @@ import { reconstructSurfacesFromSegmentation } from "../lib/imaging/surface-reco
 import {
   generateReferenceThoracicVolume,
   generateReferenceAbdominalVolume,
+  generateReferenceNeuroVolume,
+  generateReferenceSpineVolume,
   REFERENCE_STUDIES,
 } from "../lib/imaging/reference-studies.ts";
 
@@ -141,19 +143,33 @@ test("3D Surface Reconstruction: Generates inspectable Three.js BufferGeometry m
   assert.ok(spineMesh.mesh.userData.volumeCc > 0);
 });
 
-test("Reference Studies: Curated Thoracic and Abdominal volumes are anatomically calibrated", () => {
-  assert.equal(REFERENCE_STUDIES.length, 2);
+test("Reference Studies: Curated Thoracic, Abdominal, Brain MRI, and Spine CT volumes are anatomically calibrated", () => {
+  assert.ok(REFERENCE_STUDIES.length >= 4);
 
-  const [thoraxStudy, abdomenStudy] = REFERENCE_STUDIES;
+  const [thoraxStudy, abdomenStudy, neuroStudy, spineStudy] = REFERENCE_STUDIES;
   assert.equal(thoraxStudy.id, "study-ct-thorax");
   assert.equal(thoraxStudy.anatomyRegion, "Thorax");
   assert.equal(abdomenStudy.id, "study-ct-abdomen");
   assert.equal(abdomenStudy.anatomyRegion, "Abdomen & Retroperitoneum");
+  assert.equal(neuroStudy.id, "study-mr-neuro");
+  assert.equal(neuroStudy.modality, "MR");
+  assert.equal(spineStudy.id, "study-ct-spine");
+  assert.equal(spineStudy.modality, "CT");
 
   const abdomenVol = generateReferenceAbdominalVolume();
   assert.equal(abdomenVol.width, 128);
   assert.equal(abdomenVol.depth, 64);
   assert.ok(abdomenVol.data.length > 0);
+
+  const neuroVol = generateReferenceNeuroVolume();
+  assert.equal(neuroVol.modality, "MR");
+  assert.equal(neuroVol.width, 128);
+  assert.ok(neuroVol.data.length > 0);
+
+  const spineVol = generateReferenceSpineVolume();
+  assert.equal(spineVol.modality, "CT");
+  assert.equal(spineVol.width, 128);
+  assert.ok(spineVol.data.length > 0);
 });
 
 test("Anatomical Body Mapper: Classifies scan region, body Z-height, and detected structures", async () => {
