@@ -5,14 +5,14 @@ import {
   Noto_Sans,
   Noto_Sans_Arabic,
   Noto_Sans_Devanagari,
+  Noto_Serif,
   Noto_Serif_Devanagari,
 } from "next/font/google";
 import type { ScriptGroup } from "./config";
 
-// The display pair. Cormorant Garamond carries the "atelier" voice and happens
-// to ship Cyrillic, so Latin and Russian share it.
+// The display pair. Cormorant Garamond carries the "atelier" voice for Latin.
 const cormorant = Cormorant_Garamond({ variable: "--font-serif", subsets: ["latin", "latin-ext"], weight: ["400", "500", "600"] });
-const cormorantCyrillic = Cormorant_Garamond({ variable: "--font-serif", subsets: ["cyrillic", "latin"], weight: ["400", "500", "600"] });
+const cyrillicSerif = Noto_Serif({ variable: "--font-serif", subsets: ["cyrillic", "latin"], weight: ["400", "500", "600"] });
 const dmSans = DM_Sans({ variable: "--font-sans", subsets: ["latin", "latin-ext"] });
 const notoSansCyrillic = Noto_Sans({ variable: "--font-sans", subsets: ["cyrillic", "latin"] });
 
@@ -24,7 +24,7 @@ const arabicSans = Noto_Sans_Arabic({ variable: "--font-sans", subsets: ["arabic
 
 const webFonts: Partial<Record<ScriptGroup, { serif: { variable: string }; sans: { variable: string } }>> = {
   latin: { serif: cormorant, sans: dmSans },
-  cyrillic: { serif: cormorantCyrillic, sans: notoSansCyrillic },
+  cyrillic: { serif: cyrillicSerif, sans: notoSansCyrillic },
   devanagari: { serif: devanagariSerif, sans: devanagariSans },
   arabic: { serif: arabicSerif, sans: arabicSans },
 };
