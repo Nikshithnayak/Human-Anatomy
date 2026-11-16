@@ -187,6 +187,24 @@ test("Anatomical Body Mapper: Classifies scan region, body Z-height, and detecte
   assert.equal(abdomenReport.region, "Abdomen");
   assert.equal(abdomenReport.bodyZNormalized, 0.52);
   assert.ok(abdomenReport.detectedStructures.some((s) => s.structureId === "liver" || s.structureId === "bone-spine"));
+
+  const neuro = generateReferenceNeuroVolume();
+  const neuroReport = analyzeMedicalVolumeAnatomy(neuro);
+  assert.equal(neuroReport.region, "Brain & Cranium");
+  assert.equal(neuroReport.bodyZNormalized, 0.90);
+  assert.ok(neuroReport.detectedStructures.some((s) => s.structureId === "brain-parenchyma"));
+  assert.ok(neuroReport.detectedStructures.some((s) => s.structureId === "brain-tumor-edema"));
+  assert.match(neuroReport.explanation, /brain|glioblastoma|cerebral/i);
+  assert.doesNotMatch(neuroReport.explanation, /liver|kidney/i);
+
+  const spine = generateReferenceSpineVolume();
+  const spineReport = analyzeMedicalVolumeAnatomy(spine);
+  assert.equal(spineReport.region, "Spine & Canal");
+  assert.equal(spineReport.bodyZNormalized, 0.44);
+  assert.ok(spineReport.detectedStructures.some((s) => s.structureId === "bone-spine"));
+  assert.ok(spineReport.detectedStructures.some((s) => s.structureId === "lumbar-disc-herniation"));
+  assert.match(spineReport.explanation, /spine|lumbar/i);
+  assert.doesNotMatch(spineReport.explanation, /liver|kidney/i);
 });
 
 test("Embedded Image Extraction: Recovers JPEG, PNG, and WebP from encapsulated DICOM buffers", () => {

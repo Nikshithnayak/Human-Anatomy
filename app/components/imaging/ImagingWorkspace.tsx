@@ -122,14 +122,25 @@ export function ImagingWorkspace({
   // Automated Surface Reconstruction: Segments anatomical boundaries and reconstructs 3D surfaces
   const handleQuick3DReconstructionForVolume = useCallback(async (
     targetVol: MedicalVolume,
-    targetReport?: AnatomicalLocationReport | null
+    targetReport?: AnatomicalLocationReport | null,
+    overrideStructures?: string[]
   ) => {
     setIsProcessing(true);
     setProcessingMessage("Reconstructing voxel densities and delineating anatomical boundaries via Hounsfield thresholds...");
 
     try {
-      let structuresToSegment = selectedStructures.length > 0 ? selectedStructures : ["bone-spine", "liver", "lungs-bilateral"];
-      if (targetReport && targetReport.detectedStructures.length > 0) {
+      let structuresToSegment =
+        overrideStructures && overrideStructures.length > 0
+          ? overrideStructures
+          : selectedStructures.length > 0
+          ? selectedStructures
+          : ["bone-spine", "liver", "lungs-bilateral"];
+
+      if (
+        (!overrideStructures || overrideStructures.length === 0) &&
+        targetReport &&
+        targetReport.detectedStructures.length > 0
+      ) {
         const detected = targetReport.detectedStructures
           .map((s) => s.structureId)
           .filter((id) => SUPPORTED_STRUCTURES.some((st) => st.id === id));
@@ -168,18 +179,23 @@ export function ImagingWorkspace({
   const loadVolumeAndReport = useCallback((
     vol: MedicalVolume,
     report: AnatomicalLocationReport,
-    auto3D: boolean = false
+    auto3D: boolean = false,
+    presetStructures?: string[]
   ) => {
     setUploadError(null);
     setVolume(vol);
     setLocationReport(report);
 
-    // Pre-select matching structures from anatomical classification
-    if (report.detectedStructures.length > 0) {
+    let structuresToUse: string[] = [];
+    if (presetStructures && presetStructures.length > 0) {
+      structuresToUse = presetStructures;
+      setSelectedStructures(presetStructures);
+    } else if (report.detectedStructures.length > 0) {
       const matchedIds = report.detectedStructures
         .map((s) => s.structureId)
         .filter((id) => SUPPORTED_STRUCTURES.some((st) => st.id === id));
       if (matchedIds.length > 0) {
+        structuresToUse = matchedIds;
         setSelectedStructures(matchedIds);
       }
     }
@@ -193,7 +209,7 @@ export function ImagingWorkspace({
     setReconstruction(null);
 
     if (auto3D) {
-      handleQuick3DReconstructionForVolume(vol, report);
+      handleQuick3DReconstructionForVolume(vol, report, structuresToUse);
     } else {
       setStage("review-scan");
       sounds.playCelebration();
@@ -212,29 +228,30 @@ export function ImagingWorkspace({
 
     setTimeout(() => {
       let loadedVolume: MedicalVolume;
+      let targetStructures: string[];
       if (studyId === "study-ct-abdomen") {
         loadedVolume = generateReferenceAbdominalVolume();
-        setSelectedStructures(["bone-spine", "liver", "kidneys-bilateral", "spleen", "liver-lesion"]);
+        targetStructures = ["bone-spine", "liver", "kidneys-bilateral", "spleen", "liver-lesion"];
       } else if (studyId === "study-mr-neuro") {
         loadedVolume = generateReferenceNeuroVolume();
-        setSelectedStructures(["brain-parenchyma", "brain-tumor-edema"]);
+        targetStructures = ["brain-parenchyma", "brain-tumor-edema"];
       } else if (studyId === "study-ct-spine") {
         loadedVolume = generateReferenceSpineVolume();
-        setSelectedStructures(["bone-spine", "lumbar-disc-herniation"]);
+        targetStructures = ["bone-spine", "lumbar-disc-herniation"];
       } else {
         loadedVolume = generateReferenceThoracicVolume();
-        setSelectedStructures([
+        targetStructures = [
           "bone-spine",
           "bone-ribs",
           "lungs-bilateral",
           "heart-mediastinum",
           "thoracic-aorta",
           "lung-nodule",
-        ]);
+        ];
       }
 
       const report = analyzeMedicalVolumeAnatomy(loadedVolume);
-      loadVolumeAndReport(loadedVolume, report, auto3D);
+      loadVolumeAndReport(loadedVolume, report, auto3D, targetStructures);
       setIsProcessing(false);
     }, 250);
   }, [loadVolumeAndReport]);
@@ -362,7 +379,7 @@ export function ImagingWorkspace({
 
   const handleQuick3DReconstruction = async () => {
     if (!volume) return;
-    await handleQuick3DReconstructionForVolume(volume, locationReport);
+    await handleQuick3DReconstructionForVolume(volume, locationReport, selectedStructures);
   };
 
   const stagesList = [
