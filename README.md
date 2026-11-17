@@ -42,7 +42,7 @@
 - **3D & Spatial Graphics:** Three.js v0.185.1, `three-mesh-bvh`, Meshopt + Draco decoders, GSAP
 - **Medical Imaging & ML:** `dicom-parser`, `dcmjs`, `onnxruntime-web` (`public/models/brachial-plexus.onnx`)
 - **UI & Styling:** Tailwind CSS 4, Lucide Icons, Web Audio feedback
-- **Validation & Testing:** ESLint (`--max-warnings=0`), `tsc --noEmit`, `vinext build`, Next.js build, Node.js test runner (`node --test`, 31/31 tests)
+- **Validation & Testing:** ESLint (`--max-warnings=0`), `tsc --noEmit`, `vinext build`, Next.js build (`build:next`), Node.js test runner (`node --test`, 26/26 tests passed)
 
 ---
 
@@ -65,8 +65,15 @@ npm run dev
 ```
 Open `http://localhost:3000/en` in your browser.
 
-### Typecheck, Production Build & Automated Tests
+### Run Automated Tests & Production Build
 ```bash
+# Run unit & integration test suite (26 tests)
+npm test
+
+# Build production Next.js application
+npm run build:next
+
+# Full CI pipeline (typecheck + build + tests)
 npm run test:build
 ```
 
@@ -83,7 +90,9 @@ python services/nerve_explorer/run_inference.py --image <path-to-ultrasound-png>
 - **Third-Party Anatomical Datasets, Submodules & Pretrained Weights** (retained under their required open-source and Creative Commons licenses):
   - **BodyParts3D 4.0**: © The Database Center for Life Science (DBCLS) — [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) / CC BY-SA 2.1 Japan
   - **Human Reference Atlas Female v1.10**: © HuBMAP Consortium & U.S. NLM — [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+  - **Layered Body Atlas (`bodyatlas.github.io`)**: 1,310 procedural structures across 14 systems with 10-layer progressive dissection peeling & cross-section slicing — Open Educational Project
   - **Z-Anatomy (`nqwrc/3d-anatomy`)**: CC BY-NC-SA 4.0 (`public/z-anatomy/LICENSE.txt`, `public/z-anatomy/NOTICE.txt`)
   - **OHIF Viewers (`OHIF/Viewers`, `dicom-parser`, `dcmjs`)**: MIT License
   - **Hierarchical-Temporal-BP-Seg (`brachial-plexus.onnx`)**: MIT License
+  - **Clinical Imaging Reference Standards**: Calibrated against gold-standard consensus protocols from NCI LIDC-IDRI, MICCAI LiTS/BTCV, RSNA-ASNR-MICCAI BraTS 2021, and RSNA Lumbar Spine Consortium.
 - See [docs/THIRD_PARTY_LICENSES.md](docs/THIRD_PARTY_LICENSES.md) and [docs/datasets/DATASET_ATTRIBUTION.md](docs/datasets/DATASET_ATTRIBUTION.md) for complete notices.
