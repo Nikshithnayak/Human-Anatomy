@@ -41,7 +41,6 @@ import {
   CheckCircle2,
   ChevronRight,
   Crosshair,
-  Database,
   FileImage,
   Info,
   MapPin,
@@ -51,7 +50,6 @@ import {
   X,
 } from "lucide-react";
 import { NormalVsAbnormalComparator } from "./NormalVsAbnormalComparator";
-import { OhifWorkstationPanel } from "./OhifWorkstationPanel";
 
 export type ImagingStage =
   | "upload"
@@ -62,8 +60,7 @@ export type ImagingStage =
 
 export type MedicalImagingCenterMode =
   | "ct-mri-mpr"
-  | "normal-vs-abnormal"
-  | "ohif-dicomweb";
+  | "normal-vs-abnormal";
 
 interface ImagingWorkspaceProps {
   onClose?: () => void;
@@ -514,22 +511,6 @@ export function ImagingWorkspace({
             <Split size={13} />
             <span>Normal vs. Abnormal Comparative Lab</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              sounds.playClick();
-              setWorkspaceMode("ohif-dicomweb");
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all ${
-              workspaceMode === "ohif-dicomweb"
-                ? "bg-sky-600 text-white shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-            }`}
-          >
-            <Database size={13} />
-            <span>OHIF Viewers & DICOMweb</span>
-          </button>
         </div>
 
         <span className="text-[10px] text-neutral-400 font-mono hidden xl:inline">
@@ -556,22 +537,6 @@ export function ImagingWorkspace({
       <div className="flex-1 min-h-0 overflow-y-auto px-1 sm:px-2 pb-8">
         {workspaceMode === "normal-vs-abnormal" ? (
           <NormalVsAbnormalComparator theme={theme} />
-        ) : workspaceMode === "ohif-dicomweb" ? (
-          <OhifWorkstationPanel
-            onOpenMprWithProtocol={() => {
-              setWorkspaceMode("ct-mri-mpr");
-              if (!volume) {
-                handleLoadReferenceStudy("study-ct-thorax", false);
-              } else {
-                setStage("review-scan");
-              }
-            }}
-            onOpenLocalSeriesUpload={() => {
-              setWorkspaceMode("ct-mri-mpr");
-              setStage("upload");
-              setUploadMode("dicom");
-            }}
-          />
         ) : (
           <>
             {/* Loading Overlay */}
